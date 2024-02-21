@@ -1,0 +1,28 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions: write-all
+    
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Archive Release
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        filename: 'blender-dcltoolkit-scene-slicer.zip'
+        exclusions: '/*.github/* /*.git/* /*assets/* /*releases/* /*test-files/* .editorconfig .gitignore .prettierrc create-release.sh'
+
+    - name: Upload Release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        artifacts: 'blender-dcltoolkit-scene-slicer.zip'
+        token: ${{ secrets.GITHUB_TOKEN }}
