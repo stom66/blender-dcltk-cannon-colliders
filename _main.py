@@ -14,7 +14,7 @@ class EXPORT_OT_CannonColliders(bpy.types.Operator):
 		# Use self.filepath to get the export path
 
 		# Call the Main function
-		result = CC_Main()
+		result = Main()
 
 		# Report the result
 		if result:
@@ -30,7 +30,7 @@ class EXPORT_OT_CannonColliders(bpy.types.Operator):
 	#	return {'RUNNING_MODAL'}
 
 
-def CC_Main():
+def Main():
 	# Ensure nothing is selected
 	bpy.ops.object.select_all(action='DESELECT')
 	
@@ -40,13 +40,16 @@ def CC_Main():
 	# Get the chosen collection in the panel
 	col = bpy.data.collections.get(cc_settings.export_collection)
 
+	# Create a list of all objects with rigibodies
+
 	# Blank dict for storing RB objects and their properties
-	rb_objects = {}
+	rb_objects = []
 
 	# Loop through all collection objects, and gt the RB properties
 	for obj in col.all_objects:
 		if obj.type == 'MESH' and obj.rigid_body is not None:
-			rb_objects[obj.name] = GetObjectRBProperties(obj)
+			object_data = GetObjectRBProperties(obj)
+			rb_objects.append(object_data)
 
 	# Export the data
 	file = GetExportPath(cc_settings.output_file)
@@ -57,28 +60,28 @@ def CC_Main():
 			
 def GetObjectRBProperties(obj: bpy.types.Object):
 
+	# Blank dict to store the results in
 	obj_data = {
-		"vertices"   : [], # Contains tuples of vert positions
-		"indices"    : [], # Contains mesh indices
-		"type"       : "", # RB type: ACTIVE or PASSIVE
-		"shape"      : "", # Shape: Box, Sphere, Capsule, Cylinder, Cone, Convex Hull or Mesh, 
-		"friction"   : 0,  # Friction value of physics material
-		"restitution": 0,  # Bounciness value of physics material
-		"mass"       : 0,  # Mass of object
+		"obj_name"   : obj.name,						# Object name
+		"position"   : [],					# Object position
+		"vertices"   : [], 								# Contains vert positions (not in tuples)
+		"indices"    : [], 								# Contains mesh indices
+		"type"       : obj.rigid_body.type, 			# RB type: ACTIVE or PASSIVE
+		"shape"      : obj.rigid_body.collision_shape, 	# Shape: Box, Sphere, Capsule, Cylinder, Cone, Convex Hull or Mesh, 
+		"friction"   : obj.rigid_body.friction,  		# Friction value of physics material
+		"restitution": obj.rigid_body.restitution,  	# Bounciness value of physics material
+		"mass"       : obj.rigid_body.mass,  			# Mass of object
 	}
+	# Set the position, flipping Y and Z
+	obj_data["position"] = [obj.location.x, obj.location.z, obj.location.y]
 
+	# Get the actual mesh data
 	mesh = obj.data
 	for vertex in mesh.vertices:
-		obj_data["vertices"].append(tuple(vertex.co))
+		x, y, z = vertex.co[:]
+		obj_data["vertices"].extend([x, z, y])
 
 	for face in mesh.polygons:
 		obj_data["indices"].extend(face.vertices)
-
-	# Physics properties
-	obj_data["shape"]       = obj.rigid_body.collision_shape
-	obj_data["friction"]    = obj.rigid_body.friction
-	obj_data["restitution"] = obj.rigid_body.restitution
-	obj_data["mass"]        = obj.rigid_body.mass
-	obj_data["type"]        = obj.rigid_body.type
 
 	return obj_data
