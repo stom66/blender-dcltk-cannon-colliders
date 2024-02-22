@@ -1,6 +1,6 @@
 # Blender Decentraland Toolkit: Cannon Colliders
 
-This is a Blender plugin for exporting Rigidbodies as Cannon-compatible colliders. The results are exported to a JSON file that contains the data needed to create Trimesh colliders.
+This is a Blender plugin for exporting Rigidbodies to JSON as Cannon-compatible colliders. The results are exported to a JSON file that contains the data needed to create Trimesh colliders.
 
 It was written for use with the **Infinity Engine** in Decentraland - see the [Decentrally repository](https://github.com/decentraland-scenes/decentrally) for more information.
 
@@ -11,52 +11,47 @@ It was written for use with the **Infinity Engine** in Decentraland - see the [D
 
 Installation
 --
-Go to `Edit > Preferences > Addons > Install` and select .zip file.
-
-You can also clone this repo to your addons folder.
+* Download the latest version from the [Releases](/releases) page
+* In Blender, go to `Edit > Preferences > Addons > Install`
+* Select the .zip file
+* Once installed, ensure the plugin is activated (ticked) in the list of Addons
 
 Once installed you can find it in `3D Viewport -> Sidebar -> DCL Toolkit -> Cannon Colliders`
 
+![blender ui panel location](./assets/blender-ui-location.png)
+
+
 How to use
---
-* Place your scene in a collection
-* In the **DCL Toolkit** sidebar panel, under "Cannon Colliders": 
+---
+* Place your colliders in a collection
+* Give each of your colliders a **Rigidbody** in the Physics tab:
+	* Set the type to Passive
+	* Under "Collisions" set the Shape. Currently only "Mesh" with source "Base" is supported.
+	* Under "Surface Response" set both the "Friction" and "Bounciness"
+* In the **DCL Toolkit** sidebar panel, under section **Cannon Colliders**: 
     * Choose your collection in the dropdown 
     * Configure output path (see below)
-    * Configure grid size (see below)
-    * Click the "Slice and Export" button
+    * Click the "Export" button
+
+
 
 ### Settings:
 
-The following options are available in the Scene Slicer panel: 
+The following options are available in the Cannon Colliders panel: 
 
-#### Collection to export
+#### Export collection
 
-* Choose the collection of objects you wish to export
+* Choose the collection of colliders you wish to export
 * Click the refresh symbol if your collection is not in the dropdown
-* All objects wihin the colelction will be exported - visbility is ignored
+* All objects in the collection **with a Rigidbody** will be exported - visbility is ignored
 
 #### Output path
-* Blender uses `//` for relative paths. 
-* Use `//tiles` to output to a folder named `tiles` in current file location. 
-* The folder must exist.
+* Blender uses `//` for relative paths
+* Use `//colliders.json` to output to a file in the current blend file location
 
-
-#### Grid size
-
-* Suggest using 1/4 parcel size or smaller for good results.
-* Grid size must be less than 1/2 your total parcel size. 
-* Smaller grid sizes will take longer to process as they contain more tiles. 
-* Larger grid sizes will result in the tile being unloaded closer to the player.
-* Consider having a larger Z axis (vertical)
-
-### Advanced settings
-
-Some additonal options are available in the "Advanced Settings" panel.
-
-* Toggle minification of the JSON output
-* Toggle the use of Draco compression on glTF exports
-* Tile origin - set export origin position to use tile min position, tile center, or tile max position
+#### JSON: minify output
+* Significantly reduces JSON export file size
+* Disable for dev; enable for production
 
 
 How does it work
@@ -64,24 +59,19 @@ How does it work
 
 The addon peforms roughly the following process when the "Export" button is clicked:
 
-* Work out grid size and origin based on collection bounding box
-* Work out bounding boxes for all objects in collection
-* Loop through each grid tile and check for objects with intersecting bounding boxes (see [caveat #1](#known-issues-limitations-and-caveats))
-* Duplicate all objects in the tile, which:
-    * Adds an intersection boolean to limit the geometry to the tile bounds
-    * Adds a triangulate modifier
-    * Applies all modifiers (mirrors, bevels, etc)
-    * Updates the objects origin (see [Advanced settings - Tile origin](#advanced-settings))
-* Double check we have some mesh data in the tile after applying all the bools
-* Export the duplicated objects and remove them
+* Loop through all objects in the specified collection
+* Check if the object has a Rigibody component
+* Create an object representing the object mesh and its Rigidbody properties
+* Export all objects to the specified JSON file
 
 
-Tileset JSON
+Collider JSON
 ---
 
 > **NOTE:** Positions and indexes are in XYZ order, with Z representing the vertical (up) axis
 
-The addon exports a JSON structure describing the tileset to `tileset.json`.  
+The addon exports a JSON structure describing the colliders to the output file specified. By default this is `colliders.json`.
+
 It contains the following information:
 
 ```js
@@ -109,34 +99,16 @@ It contains the following information:
 ```
 
 
-How to use: Cannon Colliders
----
-* Place your colliders in a collection
-* In Blenders Physics tab, give each of your colliders a Rigidbody
-	* Set the type to Passive
-	* Under "Collisions" set the Shape. Currently only "Mesh" with source "Base" is supported.
-	* Under "Surface Response" set both the "Friction" and "Bounciness"
-* In the Scene Slicer sidebar panel:
-* Choose your collection in the dropdown
-* Configure output path (see below)
-* Configure grid size (see below)
-* Click the "Slice and Export" button
-
-
 Known issues, limitations and caveats:
 --
 
-1) Tile occupancy is determined by rectangular bounding boxes, this can result in tiles being incorrectly considered to be "occupied" and processed when they do not contain any mesh data. However, a tri-count is done after applying all modifiers and tiles with 0 tris are skipped. This *mostly* works, but sometimes can result in blank tiles.
-1) Does not support Curves
+1) Does not apply modifiers. Exported mesh data represents the base mesh.
 1) Object visibility is ignored - if it's in the collection, it gets exported
 
 ToDo:
 --
+[ ] Show warning if objects are missing RBs  
+[ ] Support shapes properly: box, sphere  
+[ ] Add option to apply modifiers  
 [ ] Add option to flip tileset.json YZ on export  
 [ ] Make all collections objects visible to avoid error with exporter  
-[ ] Add a way for user to interrupt process  
-[ ] Stop UI from locking up  
-[ ] Allow user to export individual tiles  
-[ ] Add batch-exporter  
-[ ] Move tiles to own groups  
-[ ] Parent tile objects to an empty for easier management?  
