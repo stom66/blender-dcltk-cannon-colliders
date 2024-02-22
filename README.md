@@ -72,30 +72,54 @@ Collider JSON
 
 The addon exports a JSON structure describing the colliders to the output file specified. By default this is `colliders.json`.
 
-It contains the following information:
+The structure is shown in this example:
 
 ```js
-{
-	"name"           : "park",            // Name of the tileset (the collection name)
-	"tileset_size"   : [ 7,   6,   2   ], // The total size (in tiles) of the tileset
-	"tileset_origin" : [ 0.0, 0.0, 0.0 ], // The origin position of the tileset
-	"tile_dimensions": [ 8.0, 8.0, 4.0 ], // The size (in Blender units) of each tile
-	"tile_format"    : "GLTF_SEPARATE",   // glTF format, possible values are GLB, GLTF_SEPARATE
-	"tile_origin"    : "CENTER",          // Tile origin, possible values are CENTER, TILE_MIN, TILE_MAX
-	"tiles"          : [                  // A nested array of tiles 
-		[
-			[
-				{ 
-					"index"     : [ 0, 0, 0 ],       // The index of this tile in the tiles array
-					"src"       : "tile_0_0_0",      // The gltf filename. File extension derived from tile_format 
-					"pos_center": [ 4.0, 4.0, 2.0 ], // The tile center 
-					"pos_min"   : [ 0.0, 0.0, 0.0 ], // The minimum bounds of this tile
-					"pos_max"   : [ 8.0, 8.0, 4.0 ]  // The maximum bounds of the tile
-				}, // ... etc, for each tile
-			],
-		],
-	]
+[
+    {
+        "obj_name"   : "cube",    // Object name
+        "position"   : [4, 4, 2], // Object position (Z+ is up)
+        "vertices"   : [...],     // Array of vert positions (not in tuples)
+        "indices"    : [...],     // Array of face indices (not in tuples)
+        "type"       : "PASSIVE", // RB type: ACTIVE or PASSIVE
+        "shape"      : "MESH",    // Shape: any valid Blender RB Shape (Box, Mesh, etc) 
+        "friction"   : 1.0,       // Friction value of physics material
+        "restitution": 0.5,       // Bounciness value of physics material
+        "mass"       : 5.0,       // Mass of object
+    },
+    // ... etc, for each Rigidbody
+
+]
+```
+
+Using collider JSON: TypeScript example
+---
+
+For a more complete example of creating Cannon colliders see the **TODO: add link to example REPO**
+
+A basic example of using the data with TypeScript is shown below:
+
+```ts
+interface ColliderData {
+	obj_name   : string,
+	position   : number[],
+	vertices   : number[];
+	indices    : number[];
+	type       : string;
+	shape      : string;
+	friction   : number;
+	restitution: number;
+	mass       : number;
 }
+
+import colliderDataJSON from './colliders.json';
+
+const colliderDataArray: ColliderData[] = colliderDataJSON as ColliderData[];
+
+colliderDataArray.forEach((colliderData, index) => {
+	console.log(colliderData)
+	// ... rest of code for creating cannon colliders
+});
 ```
 
 
