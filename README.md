@@ -131,7 +131,5 @@ Known issues, limitations and caveats:
 
 ToDo:
 --
-[ ] Show warning if objects are missing RBs  
 [ ] Support shapes properly: box, sphere  
-[ ] Add option to apply modifiers 
-[ ] Make all collections objects visible to avoid error with exporter  
+[ ] Add support for final mesh, eg clone object and apply modifiers  
