@@ -52,7 +52,8 @@ def Main():
 			rb_objects.append(object_data)
 
 	# Export the data
-	file = GetExportPath(cc_settings.output_file)
+	file = bpy.path.ensure_ext(GetExportPath(), ".json")
+	
 	ExportDataToJSON(rb_objects, file, cc_settings.minify_json)
 
 	return True

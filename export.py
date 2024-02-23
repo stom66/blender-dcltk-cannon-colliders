@@ -1,4 +1,5 @@
 import 	bpy
+import 	os
 import 	json
 from 	collections 			import defaultdict
 from 	xml.etree.ElementTree 	import tostring
@@ -13,22 +14,29 @@ from 	xml.etree.ElementTree 	import tostring
 # ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 #                                  
 
-def GetExportPath(path: str) -> str:
+
+def GetExportPath() -> str:
 	"""
 	Get the export path for the collection.
-
-	Args:
-	- output_path (str): The output path for the collection.
 
 	Returns:
 	- str: The export path.
 	"""
-	# Set the export file name to match the collection name (minus the MATCH_STRING)
-	path = bpy.path.abspath(path)
-	
-	# Ensure filepath doesn't have a trailing slash, as this causes a permission error
-	if path.endswith("/") or path.endswith("\\"):
-		path = path[:-1]
+	# Get cannon collider settings
+	cc_settings = bpy.context.scene.cc_settings
+
+	# Get the export path based on the current settings value
+	path = bpy.path.abspath(cc_settings.output_file)
+
+	# Ensure the output folder exists
+	try:
+		# Ensure filepath exists, create it if it doesn't
+		os.makedirs(path)
+	except FileExistsError:
+		pass  # The directory already exists, no need to create
+
+	# Normalise the output path, ensuring correct os.sep is used
+	path = os.path.normpath(path)
 
 	return path
 
