@@ -68,7 +68,7 @@ The addon peforms roughly the following process when the "Export" button is clic
 Collider JSON
 ---
 
-> **NOTE:** Positions and indexes are in XYZ order, with Z representing the vertical (up) axis
+> **NOTE:** Positions and indexes are in XYZ order, with Y representing the vertical (up) axis
 
 The addon exports a JSON structure describing the colliders to the output file specified. By default this is `colliders.json`.
 
@@ -78,7 +78,7 @@ The structure is shown in this example:
 [
     {
         "obj_name"   : "cube",    // Object name
-        "position"   : [4, 4, 2], // Object position (Z+ is up)
+        "position"   : [4, 2, 4], // Object position (Y+ is up)
         "vertices"   : [...],     // Array of vert positions (not in tuples)
         "indices"    : [...],     // Array of face indices (not in tuples)
         "type"       : "PASSIVE", // RB type: ACTIVE or PASSIVE
@@ -92,7 +92,7 @@ The structure is shown in this example:
 ]
 ```
 
-Using collider JSON: TypeScript example
+Using the JSON: TypeScript example
 ---
 
 For a more complete example of creating Cannon colliders see the **TODO: add link to example REPO**
@@ -133,6 +133,5 @@ ToDo:
 --
 [ ] Show warning if objects are missing RBs  
 [ ] Support shapes properly: box, sphere  
-[ ] Add option to apply modifiers  
-[ ] Add option to flip tileset.json YZ on export  
+[ ] Add option to apply modifiers 
 [ ] Make all collections objects visible to avoid error with exporter  
