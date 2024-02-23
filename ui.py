@@ -53,13 +53,12 @@ class VIEW3D_PT_CannonColliders_Main(bpy.types.Panel):
 		col.prop(context.scene.cc_settings, "export_collection", text="")
 
 		col = row.column(align=True)
-		col.operator("cc.refresh_collections", text="", icon='FILE_REFRESH')
+		col.operator("cc.btn_refresh_collections", text="", icon='FILE_REFRESH')
 
 		# Output path
 		row = layout.row()
 		row.label(text="Output path:")
 		row.prop(context.scene.cc_settings, "output_file", text="")
-
 
 		# Minify JSON
 		row = layout.row()
