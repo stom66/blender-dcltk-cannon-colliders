@@ -44,20 +44,18 @@ def register():
 	# Register settings class
 	bpy.utils.register_class(CannonColliderSettings)
 
-	bpy.utils.register_class(EXPORT_OT_CannonColliders)
-	bpy.utils.register_class(SCENE_OT_CannonColliders_RefreshCollections)
-	bpy.utils.register_class(VIEW3D_PT_CannonColliders_Export)
-	bpy.utils.register_class(VIEW3D_PT_CannonColliders_Main)
+	bpy.utils.register_class(EXPORT_OT_CannonColliders_Export)
+	bpy.utils.register_class(SCENE_OT_CannonColliders_UI_RefreshCollections)
+	bpy.utils.register_class(VIEW3D_PT_CannonColliders_UI_Main)
 
 	bpy.types.Scene.cc_settings = bpy.props.PointerProperty(type=CannonColliderSettings)
 	
 
 def unregister():
 	# Unregister various UI component classes
-	bpy.utils.unregister_class(VIEW3D_PT_CannonColliders_Main)
-	bpy.utils.unregister_class(VIEW3D_PT_CannonColliders_Export)
-	bpy.utils.unregister_class(SCENE_OT_CannonColliders_RefreshCollections)
-	bpy.utils.unregister_class(EXPORT_OT_CannonColliders)
+	bpy.utils.unregister_class(VIEW3D_PT_CannonColliders_UI_Main)
+	bpy.utils.unregister_class(SCENE_OT_CannonColliders_UI_RefreshCollections)
+	bpy.utils.unregister_class(EXPORT_OT_CannonColliders_Export)
 
 	# Unregister settings class
 	bpy.utils.unregister_class(CannonColliderSettings)

@@ -2,7 +2,7 @@ import bpy
 
 from . export import ExportDataToJSON, GetExportPath
 
-class EXPORT_OT_CannonColliders(bpy.types.Operator):
+class EXPORT_OT_CannonColliders_Export(bpy.types.Operator):
 	bl_idname  = "cc.export"
 	bl_label   = "Export Cannon Colliders"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -10,53 +10,40 @@ class EXPORT_OT_CannonColliders(bpy.types.Operator):
 	filepath: bpy.props.StringProperty(subtype="FILE_PATH")  # type: ignore
 
 	def execute(self, context):
-		# Your export logic goes here
-		# Use self.filepath to get the export path
 
-		# Call the Main function
-		result = Main()
+		# Ensure nothing is selected
+		bpy.ops.object.select_all(action='DESELECT')
+		
+		# Get collider exporter settings
+		cc_settings = bpy.context.scene.cc_settings
 
-		# Report the result
-		if result:
-			self.report({'INFO'}, 'Cannon colliders exported successfully')
+		# Get the chosen collection in the panel
+		col = bpy.data.collections.get(cc_settings.export_collection)
+
+		# Create a list of all objects with rigibodies
+
+		# Blank dict for storing RB objects and their properties
+		rb_objects = []
+
+		# Loop through all collection objects, and gt the RB properties
+		for obj in col.all_objects:
+			if obj.type == 'MESH' and obj.rigid_body is not None:
+				object_data = GetObjectRBProperties(obj)
+				rb_objects.append(object_data)
+
+		# Export the data
+		file = bpy.path.ensure_ext(GetExportPath(), ".json")
+
+		# Check we got some RB's to export, otherwiose show an error
+		if len(rb_objects) > 0:
+			ExportDataToJSON(rb_objects, file, cc_settings.minify_json)
+			self.report({'INFO'}, str(len(rb_objects)) + ' Rigidbody colliders exported')
 			return {'FINISHED'}
 		else:
-			self.report({'ERROR'}, 'Failed to export cannon colliders')
+			# Add a warning to the user
+			self.report({'INFO'}, 'No Rigidbodies were found - nothing to do')
 			return {'CANCELLED'}
-
-	#def invoke(self, context, event):
-	#	# Open the file dialog
-	#	context.window_manager.fileselect_add(self)
-	#	return {'RUNNING_MODAL'}
-
-
-def Main():
-	# Ensure nothing is selected
-	bpy.ops.object.select_all(action='DESELECT')
-	
-	# Get collider exporter settings
-	cc_settings = bpy.context.scene.cc_settings
-
-	# Get the chosen collection in the panel
-	col = bpy.data.collections.get(cc_settings.export_collection)
-
-	# Create a list of all objects with rigibodies
-
-	# Blank dict for storing RB objects and their properties
-	rb_objects = []
-
-	# Loop through all collection objects, and gt the RB properties
-	for obj in col.all_objects:
-		if obj.type == 'MESH' and obj.rigid_body is not None:
-			object_data = GetObjectRBProperties(obj)
-			rb_objects.append(object_data)
-
-	# Export the data
-	file = bpy.path.ensure_ext(GetExportPath(), ".json")
-	
-	ExportDataToJSON(rb_objects, file, cc_settings.minify_json)
-
-	return True
+			
 
 			
 def GetObjectRBProperties(obj: bpy.types.Object):
