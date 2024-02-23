@@ -41,7 +41,7 @@ The following options are available in the Cannon Colliders panel:
 
 #### Export collection
 
-* Choose the collection of colliders you wish to export
+* Choose the collection containing the Rigidbodies you wish to export
 * Click the refresh symbol if your collection is not in the dropdown
 * All objects in the collection **with a Rigidbody** will be exported - visbility is ignored
 
@@ -87,7 +87,7 @@ The structure is shown in this example:
         "restitution": 0.5,       // Bounciness value of physics material
         "mass"       : 5.0,       // Mass of object
     },
-    // ... etc, for each Rigidbody
+    // ... etc, one object for each Rigidbody
 
 ]
 ```
