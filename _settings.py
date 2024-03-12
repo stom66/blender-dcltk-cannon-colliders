@@ -39,4 +39,18 @@ class CannonColliderSettings(bpy.types.PropertyGroup):
 		description = "Minify the exported JSON to reduce filesize",
 		default     = True,
 	) # type: ignore
+
+	# JSON minify
+	round_data: bpy.props.BoolProperty(
+		name        = "Minify (round) position data",
+		description = "Round the data of vertice position to minify files sizes",
+		default     = True,
+	) # type: ignore
+
+	# JSON minify
+	round_data_length: bpy.props.IntProperty(
+		name        = "Rounding accuracy",
+		description = "An accuracy of 3 decimal places should be suitable for most projects",
+		default     = 3,
+	) # type: ignore
 	

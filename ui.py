@@ -55,6 +55,16 @@ class VIEW3D_PT_CannonColliders_UI_Main(bpy.types.Panel):
 		col = row.column(align=True)
 		col.prop(context.scene.cc_settings, "minify_json", text="")
 
+		# Minify Data (round)
+		row = layout.row()
+		col = row.column(align=False)
+		col.label(text="Round data")
+		col = row.column(align=True)
+		col.prop(context.scene.cc_settings, "round_data_length", text="")
+		
+		col = row.column(align=True)
+		col.prop(context.scene.cc_settings, "round_data", text="")
+
 		# Btn: Export
 		row = layout.row()
 		row.operator(EXPORT_OT_CannonColliders_Export.bl_idname, text="Export", icon="FILE_VOLUME")

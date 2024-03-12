@@ -1,4 +1,5 @@
 import bpy
+from mathutils 	import Vector
 
 from . export import ExportDataToJSON, GetExportPath
 
@@ -10,6 +11,11 @@ class EXPORT_OT_CannonColliders_Export(bpy.types.Operator):
 	filepath: bpy.props.StringProperty(subtype="FILE_PATH")  # type: ignore
 
 	def execute(self, context):
+
+		# Check if we are not already in object mode
+		if bpy.context.mode != 'OBJECT':
+			# Switch to object mode
+			bpy.ops.object.mode_set(mode='OBJECT')
 
 		# Ensure nothing is selected
 		bpy.ops.object.select_all(action='DESELECT')
@@ -47,28 +53,50 @@ class EXPORT_OT_CannonColliders_Export(bpy.types.Operator):
 
 			
 def GetObjectRBProperties(obj: bpy.types.Object):
+	# Get collider exporter settings
+	cc_settings = bpy.context.scene.cc_settings
+
+	# Set short ref to rigidbody
+	rb = obj.rigid_body
 
 	# Blank dict to store the results in
 	obj_data = {
-		"obj_name"   : obj.name,						# Object name
+		"obj_name"   : obj.name,			# Object name
 		"position"   : [],					# Object position
-		"vertices"   : [], 								# Contains vert positions (not in tuples)
-		"indices"    : [], 								# Contains mesh indices
-		"type"       : obj.rigid_body.type, 			# RB type: ACTIVE or PASSIVE
-		"shape"      : obj.rigid_body.collision_shape, 	# Shape: Box, Sphere, Capsule, Cylinder, Cone, Convex Hull or Mesh, 
-		"friction"   : obj.rigid_body.friction,  		# Friction value of physics material
-		"restitution": obj.rigid_body.restitution,  	# Bounciness value of physics material
-		"mass"       : obj.rigid_body.mass,  			# Mass of object
+		"vertices"   : [], 					# Contains vert positions (not in tuples)
+		"indices"    : [], 					# Contains mesh indices
+		"type"       : rb.type, 			# RB type: ACTIVE or PASSIVE
+		"shape"      : rb.collision_shape, 	# Shape: Box, Sphere, Capsule, Cylinder, Cone, Convex Hull or Mesh, 
+		"friction"   : rb.friction,  		# Friction value of physics material
+		"restitution": rb.restitution,  	# Bounciness value of physics material
+		"mass"       : rb.mass,  			# Mass of object
 	}
+	
 	# Set the position, flipping Y and Z
 	obj_data["position"] = [obj.location.x, obj.location.z, obj.location.y]
+	
+	# Round off position, if enabled
+	if cc_settings.round_data:
+		obj_data["position"] = [
+			round(axis, cc_settings.round_data_length) for axis in [
+				obj.location.x, obj.location.z, obj.location.y
+			]]
 
 	# Get the actual mesh data
 	mesh = obj.data
 	for vertex in mesh.vertices:
-		x, y, z = vertex.co[:]
-		obj_data["vertices"].extend([x, z, y])
 
+		# Get verts, adjusted for transform
+		vert_pos = (obj.matrix_local @ vertex.co) - obj.location
+
+		# Round off coords, if enabled
+		if cc_settings.round_data: 
+			vert_pos = Vector((round(value, cc_settings.round_data_length) for value in vert_pos))
+
+
+		obj_data["vertices"].extend([vert_pos.x, vert_pos.z, vert_pos.y])
+
+	# Add face indices
 	for face in mesh.polygons:
 		obj_data["indices"].extend(face.vertices)
 
