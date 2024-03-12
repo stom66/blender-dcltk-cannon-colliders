@@ -131,5 +131,7 @@ Known issues, limitations and caveats:
 
 ToDo:
 --
+[x] Account for scale/rotation, etc
+[x] Reduce JSON file size by optionally rounding positions to 3(?) decimal places
 [ ] Support shapes properly: box, sphere  
 [ ] Add support for final mesh, eg clone object and apply modifiers  
