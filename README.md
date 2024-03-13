@@ -25,9 +25,9 @@ How to use
 ---
 * Place your colliders in a collection
 * Give each of your colliders a **Rigidbody** in the Physics tab:
-	* Set the type to Passive
-	* Under "Collisions" set the Shape. Currently only "Mesh" with source "Base" is supported.
-	* Under "Surface Response" set both the "Friction" and "Bounciness"
+    * Set the type to Passive
+    * Under "Collisions" set the Shape. Currently only "Mesh" with source "Base" is supported.
+    * Under "Surface Response" set both the "Friction" and "Bounciness"
 * In the **DCL Toolkit** sidebar panel, under section **Cannon Colliders**: 
     * Choose your collection in the dropdown 
     * Configure output path (see below)
@@ -76,17 +76,42 @@ The structure is shown in this example:
 
 ```js
 [
+
     {
-        "obj_name"   : "cube",    // Object name
-        "position"   : [4, 2, 4], // Object position (Y+ is up)
-        "vertices"   : [...],     // Array of vert positions (not in tuples)
-        "indices"    : [...],     // Array of face indices (not in tuples)
-        "type"       : "PASSIVE", // RB type: ACTIVE or PASSIVE
-        "shape"      : "MESH",    // Shape: any valid Blender RB Shape (Box, Mesh, etc) 
-        "friction"   : 1.0,       // Friction value of physics material
-        "restitution": 0.5,       // Bounciness value of physics material
-        "mass"       : 5.0,       // Mass of object
+        "obj_name"   : "mesh collider 1",   // Object name
+        "position"   : [4, 2, 4],           // Object position (Y+ is up)
+        "type"       : "PASSIVE",           // RB type: ACTIVE or PASSIVE
+        "shape"      : "MESH",              // Shape: any valid Blender RB Shape (Box, Mesh, etc) 
+        "friction"   : 1.0,                 // Friction value of physics material
+        "restitution": 0.5,                 // Bounciness value of physics material
+        "mass"       : 5.0,                 // Mass of object
+        "vertices"   : [...],               // Array of vert positions (not in tuples)
+        "indices"    : [...],               // Array of face indices (not in tuples)
     },
+
+    {
+        "obj_name"   : "box collider 1",
+        "position"   : [ 1, 0.125, 1 ],
+        "type"       : "PASSIVE",
+        "shape"      : "BOX",
+        "friction"   : 1.0,
+        "restitution": 0.6,
+        "mass"       : 1.0,
+        "dimensions" : [ 2.0, 0.25, 2.0 ],
+        "rotation"   : [ -0.393, 0.0, 0.0 ] // In radians
+    },
+
+    {
+        "obj_name"   : "sphere collider 1",
+        "position"   : [ 0, 1, 0 ],
+        "type"       : "PASSIVE",
+        "shape"      : "SPHERE",
+        "friction"   : 1.0,
+        "restitution": 0.95,
+        "mass"       : 1.0,
+        "radius"     : 2.0
+    },
+    
     // ... etc, one object for each Rigidbody
 
 ]
@@ -100,25 +125,27 @@ For a more complete example of creating Cannon colliders see the **TODO: add lin
 A basic example of using the data with TypeScript is shown below:
 
 ```ts
-interface ColliderData {
-	obj_name   : string,
-	position   : number[],
-	vertices   : number[];
-	indices    : number[];
-	type       : string;
-	shape      : string;
-	friction   : number;
-	restitution: number;
-	mass       : number;
+interface Collider {
+    obj_name   : string,
+    position   : number[],
+    type       : string,
+    shape      : string,
+    friction   : number,
+    restitution: number,
+    mass       : number,
+    radius?    : number,   // Only present for SPHERE colliders
+    dimensions?: number[], // Only present for BOX colliders
+    vertices?  : number[], // Only present for MESH colliders
+    indices?   : number[], // Only present for MESH colliders
 }
 
-import colliderDataJSON from './colliders.json';
+import colliderJSON from './colliders.json';
 
-const colliderDataArray: ColliderData[] = colliderDataJSON as ColliderData[];
+const colliderData: Collider[] = colliderJSON as Collider[];
 
-colliderDataArray.forEach((colliderData, index) => {
-	console.log(colliderData)
-	// ... rest of code for creating cannon colliders
+colliderData.forEach((collider, index) => {
+    console.log(collider)
+    // ... rest of code for creating cannon colliders
 });
 ```
 
@@ -133,5 +160,5 @@ ToDo:
 --
 [x] Account for scale/rotation, etc
 [x] Reduce JSON file size by optionally rounding positions to 3(?) decimal places
-[ ] Support shapes properly: box, sphere  
+[x] Support shapes properly: box, sphere  
 [ ] Add support for final mesh, eg clone object and apply modifiers  
