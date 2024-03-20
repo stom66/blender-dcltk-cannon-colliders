@@ -2,12 +2,15 @@
 
 This is a Blender plugin for exporting Rigidbodies to JSON as Cannon-compatible colliders. The results are exported to a JSON file that contains the data needed to create Trimesh colliders.
 
-It was written for use with the **Infinity Engine** in Decentraland - see the [Decentrally repository](https://github.com/decentraland-scenes/decentrally) for more information.
+It was written for use with the **Infinity Engine** in Decentraland - see the [Decentrally](https://github.com/decentraland-scenes/decentrally) repo for more information.
+
+An example of utilising the JSON files to create Cannon colliders in SDK7 can be found in the [dcl-cannon-colliders-example](https://github.com/stom66/dcl-cannon-colliders-example) repo.
 
 
 ### Features
 
 * Export Rigidbodies as cannon colliders
+* Supports Box, Sphere, and Mesh shapes
 
 Installation
 --
@@ -26,16 +29,21 @@ How to use
 * Place your colliders in a collection
 * Give each of your colliders a **Rigidbody** in the Physics tab:
     * Set the type to Passive
-    * Under "Collisions" set the Shape. Currently only "Mesh" with source "Base" is supported.
+    * Under "Collisions" set the Shape. Currently only "Box", "Sphere", and "Mesh" with source "Base" is supported.
     * Under "Surface Response" set both the "Friction" and "Bounciness"
 * In the **DCL Toolkit** sidebar panel, under section **Cannon Colliders**: 
     * Choose your collection in the dropdown 
     * Configure output path (see below)
     * Click the "Export" button
 
+It is recommended to enable both "Minify JSON" as "Rounding" options for production to reduce the JSON file size considerably.
 
+### Debugging:
 
-### Settings:
+There is also a visualiser for the exported colliders to aid with debugging. See the [cannon-collider-visualiser](https://github.com/stom66/cannon-collider-visualiser) repo for more info.
+
+Settings:
+---
 
 The following options are available in the Cannon Colliders panel: 
 
@@ -49,9 +57,14 @@ The following options are available in the Cannon Colliders panel:
 * Blender uses `//` for relative paths
 * Use `//colliders.json` to output to a file in the current blend file location
 
-#### JSON: minify output
-* Significantly reduces JSON export file size
+#### Minify JSON
+* Significantly reduces JSON export file size by omitting lines breaks and whitespace
 * Disable for dev; enable for production
+
+#### Rounding
+* Trims position values to 3 decimals places - this is more than accurate enough for most situations
+* Significantly reduces JSON export file size
+* Enable at all times, unless raw values are required
 
 
 How does it work
@@ -68,48 +81,48 @@ The addon peforms roughly the following process when the "Export" button is clic
 Collider JSON
 ---
 
-> **NOTE:** Positions and indexes are in XYZ order, with Y representing the vertical (up) axis
+> **NOTE:** Positions and indexes are in XYZ order, with Y representing the vertical (up) axis. Rotations are specified in quaternions.
 
 The addon exports a JSON structure describing the colliders to the output file specified. By default this is `colliders.json`.
 
-The structure is shown in this example:
+The structure is shown in this example, and a full example can be scene in the [dcl-cannon-colliders-example](https://github.com/stom66/dcl-cannon-colliders-example) repo.
 
 ```js
 [
 
     {
-        "obj_name"   : "mesh collider 1",   // Object name
-        "position"   : [4, 2, 4],           // Object position (Y+ is up)
-        "type"       : "PASSIVE",           // RB type: ACTIVE or PASSIVE
-        "shape"      : "MESH",              // Shape: any valid Blender RB Shape (Box, Mesh, etc) 
-        "friction"   : 1.0,                 // Friction value of physics material
-        "restitution": 0.5,                 // Bounciness value of physics material
-        "mass"       : 5.0,                 // Mass of object
-        "vertices"   : [...],               // Array of vert positions (not in tuples)
-        "indices"    : [...],               // Array of face indices (not in tuples)
+        "obj_name"   : "mesh collider", // Object name
+        "position"   : [4, 2, 4],       // Object position (Y+ is up)
+        "type"       : "PASSIVE",       // RB type: ACTIVE or PASSIVE
+        "shape"      : "MESH",          // Shape: any valid Blender RB Shape (Box, Mesh, etc) 
+        "friction"   : 1.0,             // Friction value of physics material
+        "restitution": 0.5,             // Bounciness value of physics material
+        "mass"       : 5.0,             // Mass of object
+        "vertices"   : [...],           // MESH ONLY: Array of vert positions (not in tuples)
+        "indices"    : [...],           // MESH ONLY: Array of face indices (not in tuples)
     },
 
     {
-        "obj_name"   : "box collider 1",
+        "obj_name"   : "box collider",
         "position"   : [ 1, 0.125, 1 ],
         "type"       : "PASSIVE",
         "shape"      : "BOX",
         "friction"   : 1.0,
         "restitution": 0.6,
         "mass"       : 1.0,
-        "dimensions" : [ 2.0, 0.25, 2.0 ],
-        "rotation"   : [ -0.393, 0.0, 0.0 ] // In radians
+        "dimensions" : [ 2.0, 0.25, 2.0 ],            // BOX ONLY
+        "rotation"   : [ -0.0, -0.707, -0.707, -0.0 ] // BOX ONLY: Quaternion, in radians
     },
 
     {
-        "obj_name"   : "sphere collider 1",
+        "obj_name"   : "sphere collider",
         "position"   : [ 0, 1, 0 ],
         "type"       : "PASSIVE",
         "shape"      : "SPHERE",
         "friction"   : 1.0,
         "restitution": 0.95,
         "mass"       : 1.0,
-        "radius"     : 2.0
+        "radius"     : 2.0 // SPHERE ONLY
     },
     
     // ... etc, one object for each Rigidbody
@@ -120,34 +133,14 @@ The structure is shown in this example:
 Using the JSON: TypeScript example
 ---
 
-For a more complete example of creating Cannon colliders see the **TODO: add link to example REPO**
+For an example of creating Cannon colliders in an SDK7 scene, see the repository [dcl-cannon-colliders-example](https://github.com/stom66/dcl-cannon-colliders-example)
 
-A basic example of using the data with TypeScript is shown below:
+It includes examples of:
 
-```ts
-interface Collider {
-    obj_name   : string,
-    position   : number[],
-    type       : string,
-    shape      : string,
-    friction   : number,
-    restitution: number,
-    mass       : number,
-    radius?    : number,   // Only present for SPHERE colliders
-    dimensions?: number[], // Only present for BOX colliders
-    vertices?  : number[], // Only present for MESH colliders
-    indices?   : number[], // Only present for MESH colliders
-}
+* `Collider` interface
+* `colliders.json` file
+* Typescript Cannon implementation for parsing and creating colliders
 
-import colliderJSON from './colliders.json';
-
-const colliderData: Collider[] = colliderJSON as Collider[];
-
-colliderData.forEach((collider, index) => {
-    console.log(collider)
-    // ... rest of code for creating cannon colliders
-});
-```
 
 
 Known issues, limitations and caveats:
@@ -155,10 +148,13 @@ Known issues, limitations and caveats:
 
 1) Does not apply modifiers. Exported mesh data represents the base mesh.
 1) Object visibility is ignored - if it's in the collection, it gets exported
+1) NGONs are not supported. The plugin will skip meshes containing ngons and show a warning
+
 
 ToDo:
 --
-[x] Account for scale/rotation, etc
-[x] Reduce JSON file size by optionally rounding positions to 3(?) decimal places
-[x] Support shapes properly: box, sphere  
-[ ] Add support for final mesh, eg clone object and apply modifiers  
+* [x] Account for scale/rotation, etc  
+* [x] Convert from Z+ up to Y+ up  
+* [x] Reduce JSON file size by optionally rounding positions to 3(?) decimal places  
+* [x] Support shapes properly: box, sphere    
+* [ ] Add support for final mesh, eg clone object and apply modifiers    
