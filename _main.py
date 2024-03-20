@@ -98,15 +98,18 @@ def GetObjectRBProperties(obj: bpy.types.Object):
 
 
 	# Handle BOX colliders
+	# This involves using a matrix to rotate the objects around 90 on X, and then 180 on Z (y)
+	# We then have to mirror everything so it 
+	# Pretty sure I've lost some brain cells to this.
 	if rb.collision_shape == "BOX":
+		# Set dimensions. We DONT flip YZ here, as the rotation conversion handles this properly
 		obj_data["dimensions"] = [obj.dimensions.x, obj.dimensions.y, obj.dimensions.z]
 
-		# Start rotation conversion. This is the tricky part. Pretty sure I've lost some brain cells to this.
 
-		# Current matrix
+		# Current world matrix
 		m_world   = obj.matrix_world
 
-		# Offset matrix
+		# Desired offset matrix
 		rot_tgt   = Euler((pi/2, 0, pi))
 		m_rot_tgt = rot_tgt.to_matrix().to_4x4()
 
@@ -115,17 +118,16 @@ def GetObjectRBProperties(obj: bpy.types.Object):
 		rot_new   = m_rot_new.to_quaternion()	
 		pos_new   = m_rot_new.translation
 
-		# export the position and rotation
+		# export the position and rotation, flipping along the X axis for both position and rotation
 		obj_data["position"] = [-pos_new.x,
 								pos_new.y,
 								pos_new.z]
 
 		obj_data["rotation"] = [-rot_new.x, 
-								rot_new.y, 
+								rot_new.y,
 								rot_new.z,
 								-rot_new.w]
-
-		pass
+		pass # placeholder for debug breakpoints
 
 
 	# Handle SPHERE colliders
