@@ -107,28 +107,23 @@ def GetObjectRBProperties(obj: bpy.types.Object):
 		m_world   = obj.matrix_world
 
 		# Offset matrix
-		rot_tgt   = Euler((pi/2, 0, 0))
+		rot_tgt   = Euler((pi/2, 0, pi))
 		m_rot_tgt = rot_tgt.to_matrix().to_4x4()
 
-		# Flip matrix
-		flip_matrix = Matrix.Scale(2, 4, (0, 0, 1))
-
 		# Final matrix
-		m_rot_new = (m_rot_tgt @ m_world) @ flip_matrix
-		rot_new   = m_rot_new.to_euler()
-	
+		m_rot_new = (m_rot_tgt @ m_world)
+		rot_new   = m_rot_new.to_quaternion()	
 		pos_new   = m_rot_new.translation
 
-		# update new rot with above matrix
-		obj_data["position"] = [pos_new.x,
-								-pos_new.y,
+		# export the position and rotation
+		obj_data["position"] = [-pos_new.x,
+								pos_new.y,
 								pos_new.z]
 
 		obj_data["rotation"] = [-rot_new.x, 
-								-rot_new.y, 
-								rot_new.z]
-
-		obj_data["rotation_order"] = obj.rotation_euler.order
+								rot_new.y, 
+								rot_new.z,
+								-rot_new.w]
 
 		pass
 
@@ -205,8 +200,6 @@ def GetObjectRBProperties(obj: bpy.types.Object):
 
 
 def convert_rotation(rotation, rotation_order):
-	# Convert Euler angles to radians
-	#rotation = [radians(angle) for angle in rotation]
 	
 	# Convert rotation order
 	if rotation_order == 'XYZ':
