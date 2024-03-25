@@ -1,7 +1,7 @@
 # Blender Decentraland Toolkit: Cannon Colliders
 
 
-<img align="left" width="100" height="100" src="./assets/cannon-colliders-logo-512.png" style="margin-right: 0.5em; margin-bottom: 1.5em;">
+<img align="left" width="100" height="100" src="./assets/cannon-colliders-logo-512.png" style="margin-right: 0.5em; margin-bottom: 2.5em;">
 
 This is a Blender plugin for exporting Rigidbodies to JSON so they can be used as CannonJS colliders. The JSON file contains the relevant data required to create Box, Sphere, and Trimesh colliders.
 
