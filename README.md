@@ -48,9 +48,6 @@ How to use
 
 It is recommended to enable both "Minify JSON" as "Rounding" options for production to reduce the JSON file size considerably.
 
-### Debugging:
-
-There is also a visualiser for the exported colliders to aid with debugging. See the [cannon-collider-visualiser](https://github.com/stom66/cannon-collider-visualiser) repo for more info.
 
 Settings:
 ---
@@ -76,6 +73,23 @@ The following options are available in the Cannon Colliders panel:
 * Significantly reduces JSON export file size
 * Enable at all times, unless raw values are required
 
+Debugging:
+---
+
+There is a visualiser for the exported colliders to aid with debugging. See the [cannon-collider-visualiser](https://github.com/stom66/cannon-collider-visualiser) repo for more info.
+
+#### Common problems:
+* **Problem**: BOX/SPHERE collider is miss-aligned  
+    **Solution**: Ensure the object's origin is at the center of its geometry
+    
+* **Problem**: collider is not being exported  
+    **Solution**: Make sure the object:  
+    * has a passive rigidbody of type BOX, SPHERE, or MESH
+    * belongs to the exported collection
+    * does not contain ngons (only tris or quads)
+    
+* **Problem**: colliders appears in the Visualiser but not in my scene  
+    **Solution**: Ensure the collider type is set to PASSIVE
 
 How does it work
 --
