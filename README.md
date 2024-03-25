@@ -1,20 +1,30 @@
 # Blender Decentraland Toolkit: Cannon Colliders
 
-This is a Blender plugin for exporting Rigidbodies to JSON as Cannon-compatible colliders. The results are exported to a JSON file that contains the data needed to create Trimesh colliders.
 
-It was written for use with the **Infinity Engine** in Decentraland - see the [Decentrally](https://github.com/decentraland-scenes/decentrally) repo for more information.
+<img align="left" width="100" height="100" src="./assets/cannon-colliders-logo-512.png" style="margin-right: 0.5em; margin-bottom: 1.5em;">
 
-An example of utilising the JSON files to create Cannon colliders in SDK7 can be found in the [dcl-cannon-colliders-example](https://github.com/stom66/dcl-cannon-colliders-example) repo.
+This is a Blender plugin for exporting Rigidbodies to JSON so they can be used as CannonJS colliders. The JSON file contains the relevant data required to create Box, Sphere, and Trimesh colliders.
+
+It was written for use with the **Infinity Engine** in Decentraland - see the [Decentrally](https://github.com/decentraland-scenes/decentrally) repo for more information. An example of utilising the JSON files to create Cannon colliders in SDK7 can be found in the [dcl-cannon-colliders-example](https://github.com/stom66/dcl-cannon-colliders-example) repo.
 
 
 ### Features
 
 * Export Rigidbodies as cannon colliders
 * Supports Box, Sphere, and Mesh shapes
+* Supports Friciton and Restitution (bounciness) values
+* Supports rotated/scaled/parented objects
+
+### See also:
+
+* DCL SDK7 + CannonJS Example: https://github.com/stom66/dcl-cannon-colliders-example
+* Infinity Engine + colliders demo: https://github.com/wacaine/dcl-infinity-engine-sdk7-template
+* Decentrally Infinity Engine: https://github.com/decentraland-scenes/decentrally
+
 
 Installation
 --
-* Download the latest version from the [Releases](/releases) page
+* Download the latest version from the [Releases](https://github.com/stom66/blender-dcltk-cannon-colliders/releases) page
 * In Blender, go to `Edit > Preferences > Addons > Install`
 * Select the .zip file
 * Once installed, ensure the plugin is activated (ticked) in the list of Addons
