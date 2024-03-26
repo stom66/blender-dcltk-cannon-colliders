@@ -17,6 +17,7 @@ It was written for use with the **Infinity Engine** in Decentraland - see the [D
 
 ### See also:
 
+* Cannon Collider Visualiser: https://github.com/stom66/cannon-collider-visualiser
 * DCL SDK7 + CannonJS Example: https://github.com/stom66/dcl-cannon-colliders-example
 * Infinity Engine + colliders demo: https://github.com/wacaine/dcl-infinity-engine-sdk7-template
 * Decentrally Infinity Engine: https://github.com/decentraland-scenes/decentrally
@@ -24,7 +25,7 @@ It was written for use with the **Infinity Engine** in Decentraland - see the [D
 
 Installation
 --
-* Download the latest version from the [Releases](https://github.com/stom66/blender-dcltk-cannon-colliders/releases) page
+* Download the latest version from the [Releases](releases) page
 * In Blender, go to `Edit > Preferences > Addons > Install`
 * Select the .zip file
 * Once installed, ensure the plugin is activated (ticked) in the list of Addons
