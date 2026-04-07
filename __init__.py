@@ -18,7 +18,7 @@ bl_info = {
 	"name"       : "DCL Toolkit: Cannon Colliders",
 	"description": "Exporter tool for generating Cannon-compatible colliders from Rigidbodies",
 	"author"     : "Tom Steventon - stom66",
-	"version"    : (1, 0, 0),
+	"version"    : (0, 3, 0),
 	"blender"    : (3, 6, 0),
 	"location"   : "3D Viewport -> Sidebar -> DCL Toolkit",
 	"description": "DCL Toolkit: Cannon Colliders",
