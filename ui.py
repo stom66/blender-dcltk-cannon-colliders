@@ -19,7 +19,7 @@ class SCENE_OT_CannonColliders_UI_RefreshCollections(bpy.types.Operator):
 
 	def execute(self, context):
 		# Trigger the update_collection_items method
-		context.scene.ss_settings.refresh_collections(context)
+		context.scene.cc_settings.refresh_collections(context)
 		return {'FINISHED'}
 		
 	
