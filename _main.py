@@ -1,5 +1,5 @@
 import bpy
-from math import degrees, radians, pi
+from math import degrees, radians, pi, isclose
 from mathutils 	import Vector, Matrix, Euler
 
 from . export import ExportDataToJSON, GetExportPath
@@ -35,7 +35,7 @@ class EXPORT_OT_CannonColliders_Export(bpy.types.Operator):
 
 				# Check it's using one of the supported rb shapes
 				rb_shape = obj.rigid_body.collision_shape
-				if rb_shape == 'BOX' or rb_shape == 'SPHERE' or rb_shape == 'MESH':
+				if rb_shape == 'BOX' or rb_shape == 'SPHERE' or rb_shape == 'MESH' or rb_shape == 'CYLINDER':
 					
 					# Get the properties and append them to the list
 					object_data = GetObjectRBProperties(obj)
@@ -133,6 +133,33 @@ def GetObjectRBProperties(obj: bpy.types.Object):
 	# Handle SPHERE colliders
 	if rb.collision_shape == "SPHERE":
 		obj_data["radius"] = max(obj.dimensions) / 2
+		pass
+
+
+	# Handle CYLINDER colliders
+	# The radius is half of whichever 2 dimensions are the same (not the height)
+	if rb.collision_shape == "CYLINDER":
+		dims = list(obj.dimensions)
+		# Find the two dimensions that are equal (within some tolerance)
+		idx_pairs = [(0, 1), (0, 2), (1, 2)]
+		radius = None
+		for i, j in idx_pairs:
+			if isclose(dims[i], dims[j], rel_tol=1e-6):
+				radius = dims[i] / 2
+				break
+		if radius is None:
+			# Fallback: raise an error or pick the closest pair
+			# Here we'll pick the smallest diff
+			i, j = min(idx_pairs, key=lambda ij: abs(dims[ij[0]] - dims[ij[1]]))
+			radius = (dims[i] + dims[j]) / 4
+			
+		obj_data["radiusTop"] = radius
+		obj_data["radiusBottom"] = radius
+
+
+		# The height is whichever dimension wasn't used for the radius, eg not i or j
+		height_idx = ({0, 1, 2} - {i, j}).pop()
+		obj_data["height"] = dims[height_idx]
 		pass
 
 
